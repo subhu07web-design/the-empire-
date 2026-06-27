@@ -1,0 +1,6 @@
+{
+  "name": "The Empire",
+  "description": "Premium multi-platform responsive Restaurant App for The Empire featuring table bookings, real-time order tracking, and an admin management dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
