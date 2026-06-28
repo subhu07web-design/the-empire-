@@ -12,9 +12,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -205,6 +207,57 @@ fun MainAppScreen(viewModel: RestaurantViewModel) {
                 }
             }
         },
+        floatingActionButton = {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(bottom = 16.dp, end = 8.dp)
+            ) {
+                // Call Floating Button
+                FloatingActionButton(
+                    onClick = {
+                        val intent = android.content.Intent(android.content.Intent.ACTION_DIAL).apply {
+                            data = android.net.Uri.parse("tel:+918822344281")
+                        }
+                        context.startActivity(intent)
+                    },
+                    containerColor = GoldPrimary,
+                    contentColor = Color.Black,
+                    shape = CircleShape,
+                    modifier = Modifier.testTag("floating_call_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Call,
+                        contentDescription = "Call Us",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                // WhatsApp Floating Button
+                FloatingActionButton(
+                    onClick = {
+                        try {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                data = android.net.Uri.parse("https://api.whatsapp.com/send?phone=918822344281&text=Hello%20The%20Empire!%20I%20would%20like%20to%20inquire%20about%20ordering.")
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "WhatsApp detail error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    containerColor = Color(0xFF25D366),
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    modifier = Modifier.testTag("floating_whatsapp_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Chat,
+                        contentDescription = "WhatsApp Us",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        },
         containerColor = DarkBg
     ) { innerPadding ->
         Row(
@@ -333,10 +386,10 @@ fun HomeScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .border(1.dp, GoldPrimary, RoundedCornerShape(16.dp))
             ) {
-                // Background Unsplash Image (Loaded via Coil) or fallback generated restaurant_hero
-                AsyncImage(
-                    model = "/app/src/main/res/drawable/restaurant_hero.jpg",
-                    contentDescription = "The Empire",
+                // Background Premium Food Banner (Loaded via painterResource from local drawable)
+                Image(
+                    painter = painterResource(id = com.example.R.drawable.restaurant_hero),
+                    contentDescription = "The Empire Royal Cuisine Banner",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
@@ -1234,10 +1287,10 @@ fun CartListItem(item: CartItem, onAdd: () -> Unit, onMinus: () -> Unit, onDelet
 // --- SECURE PAYMENT GATEWAY POPUP SCREEN ---
 @Composable
 fun PaymentGatewayScreen(totalAmount: Double, onPaymentSuccess: () -> Unit, onCancel: () -> Unit) {
-    var cardNumber by remember { mutableStateOf("") }
-    var expiry by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
-    var holder by remember { mutableStateOf("") }
+    var cardNumber by remember { mutableStateOf("4321567890123456") }
+    var expiry by remember { mutableStateOf("12/29") }
+    var cvv by remember { mutableStateOf("123") }
+    var holder by remember { mutableStateOf("Royal Guest") }
     var isProcessing by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -1343,16 +1396,12 @@ fun PaymentGatewayScreen(totalAmount: Double, onPaymentSuccess: () -> Unit, onCa
 
                     Button(
                         onClick = {
-                            if (cardNumber.length < 16 || expiry.length < 5 || cvv.length < 3 || holder.isEmpty()) {
-                                Toast.makeText(context, "Please enter valid card details to continue", Toast.LENGTH_SHORT).show()
-                            } else {
-                                isProcessing = true
-                                scope.launch {
-                                    delay(2500) // Simulate Bank Verification Secure Lag
-                                    isProcessing = false
-                                    onPaymentSuccess()
-                                    Toast.makeText(context, "Payment Successful! Order Confirmed", Toast.LENGTH_LONG).show()
-                                }
+                            isProcessing = true
+                            scope.launch {
+                                delay(1500) // Simulate Bank Verification Secure Lag
+                                isProcessing = false
+                                onPaymentSuccess()
+                                Toast.makeText(context, "Payment Successful! Order Confirmed", Toast.LENGTH_LONG).show()
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary),
